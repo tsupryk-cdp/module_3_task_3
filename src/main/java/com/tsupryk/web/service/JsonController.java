@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * The Class JsonController.
@@ -31,7 +30,7 @@ public class JsonController implements IJsonController {
 
     @Override
     @RequestMapping("/cities")
-    public ModelAndView getCitiesData(String param) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Object getCitiesData(String param) {
+        return jsonService.getCitiesData("");  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

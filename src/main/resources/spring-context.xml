@@ -17,24 +17,11 @@
 
     <bean id="jacksonMarshaller" class="org.codehaus.jackson.map.ObjectMapper"/>
 
-<!--    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-        <property name="order" value="1"/>
-        <property name="mediaTypes">
-            <map>
-                <entry key="json" value="application/json"/>
-            </map>
-        </property>
-        <property name="defaultViews">
-            <list>
-                <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
-            </list>
-        </property>
-        <property name="ignoreAcceptHeader" value="true"/>
-    </bean>-->
-
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+
+    <context:property-placeholder location="classpath:app.properties" />
 
 </beans>

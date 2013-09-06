@@ -12,5 +12,5 @@ public interface IJsonController {
 
     public User getGlobalData(String param);
 
-    public ModelAndView getCitiesData(String param);
+    public Object getCitiesData(String param);
 }
