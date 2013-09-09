@@ -29,7 +29,8 @@ public class JsonController implements IJsonController {
     }
 
     @Override
-    @RequestMapping("/cities")
+    @RequestMapping(value = "/cities", produces = "application/json")
+    @ResponseBody
     public Object getCitiesData(String param) {
         return jsonService.getCitiesData("");  //To change body of implemented methods use File | Settings | File Templates.
     }

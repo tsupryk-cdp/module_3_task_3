@@ -4,12 +4,8 @@ import com.tsupryk.repository.api.IJsonRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
+import java.util.Arrays;
 
 /**
  * The Class JsonRepository.
@@ -26,18 +22,44 @@ public class JsonRepository implements IJsonRepository {
     @Override
     public String getData() {
 
-        String content = null;
-        File file = new File(filePath);
-        try {
-            FileReader reader = new FileReader(file);
-            char[] chars = new char[(int) file.length()];
-            reader.read(chars);
-            content = new String(chars);
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (dataCache != null) {
+            return dataCache;
         }
-        return content;
+
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(filePath);
+
+        try {
+            byte[] allBytes = new byte[3000];
+            int bytesNumber = stream.available();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(3000);
+
+            while (bytesNumber != 0) {
+                byte[] bytes = new byte[bytesNumber];
+                stream.read(bytes);
+                outputStream.write(bytes);
+                bytesNumber = stream.available();
+            }
+
+            dataCache = new String(outputStream.toByteArray());
+
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return dataCache;
+
+//        String content = null;
+//        File file = new File(filePath);
+//        try {
+//            FileReader reader = new FileReader(file);
+//            char[] chars = new char[(int) file.length()];
+//            reader.read(chars);
+//            content = new String(chars);
+//            reader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return content;
     }
 
     public String getFilePath() {

@@ -18,7 +18,7 @@
     <bean id="jacksonMarshaller" class="org.codehaus.jackson.map.ObjectMapper"/>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/"/>
+        <property name="prefix" value="/WEB-INF/json/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
 
