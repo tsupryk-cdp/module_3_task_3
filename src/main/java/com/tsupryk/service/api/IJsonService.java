@@ -7,7 +7,7 @@ package com.tsupryk.service.api;
  */
 public interface IJsonService {
 
-    public String getGlobalData();
+    public Object getGlobalData();
 
     public Object getCitiesData();
 

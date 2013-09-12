@@ -1,6 +1,5 @@
 package com.tsupryk.web.service;
 
-import com.tsupryk.api.User;
 import com.tsupryk.service.api.IJsonService;
 import com.tsupryk.web.api.IJsonController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +21,8 @@ public class JsonController implements IJsonController {
     @Override
     @RequestMapping(value = "/global", produces = "application/json")
     @ResponseBody
-    public User getGlobalData(String param) {
-        User user = new User();
-        user.setName("sss");
-        return user;
+    public Object getGlobalData(String param) {
+        return jsonService.getGlobalData();
     }
 
     @Override

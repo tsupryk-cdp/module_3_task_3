@@ -1,8 +1,5 @@
 package com.tsupryk.web.api;
 
-import com.tsupryk.api.User;
-import org.springframework.web.servlet.ModelAndView;
-
 /**
  * The Interface IJsonController.
  * Date: 06.09.13
@@ -10,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public interface IJsonController {
 
-    public User getGlobalData(String param);
+    public Object getGlobalData(String param);
 
     public Object getCitiesData(String param);
 

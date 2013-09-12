@@ -1,14 +1,22 @@
 var parsedJson;
 var parsedViewType;
 
+var receivedData;
+var dataType;
+
 var minYear = 2099;
 var maxYear = 0;
 
-function mainFunc(){
-    var json = parsedJson;
-    var viewType = parsedViewType = $(".viewTypeClass input:checked").val();
+function mainFunc(datasets){
 
-    var datasets = getData(viewType, json);
+    if (receivedData == 'undefined') {
+        receivedData = datasets;
+    }
+
+//    var json = parsedJson;
+//    var viewType = parsedViewType = $(".viewTypeClass input:checked").val();
+
+//    var datasets = getData(viewType, json);
 
     fillDiagramNames(datasets);
 
@@ -31,7 +39,7 @@ function mainFunc(){
     }
 
     // draw diagram
-    $.plot("#placeholder", [datasets[0]], options);
+    $.plot("#placeholder", [datasets], options);
     
     $("#choices").find("input").click(plotAccordingToChoices);
     plotAccordingToChoices();
@@ -99,13 +107,12 @@ function getGlobalData(datasets) {
     return data1;
 }
 
-function getCityData(datasets){
-    var data1 = [];
-    for(townName in datasets) {
-        data1.push(datasets[townName]);
-    };
+function getCityData(){
+
     return data1;
 }
+
+
 
 function getData(type, json) {
     var datasets = readJson(json);
@@ -119,7 +126,7 @@ function getData(type, json) {
             extractData = getCityData;
             break;
     };
-    data1 = extractData(datasets);
+    data1 = extractData();
     // hard-code colors to prevent them from shifting as towns are turned on/off
     var i = 0;
     $.each(datasets, function(key, val) {
@@ -151,6 +158,19 @@ function getEpamData(datasets){
 }
 
 jQuery(document).ready(function($) {
-    firstRead();    
+    dataType = "cities";
+    performRequest("cities");
 });
-$('[name = viewType]').on('change', mainFunc);
+
+function performRequest(type){
+    $.get(
+        "/module_3_task_3/json/" + type,
+        {},
+        mainFunc
+    );
+}
+
+$('[name = viewType]').on('change', function(){
+    dataType = $(".viewTypeClass input:checked").val();
+    performRequest(dataType);
+});
