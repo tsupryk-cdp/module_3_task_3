@@ -25,13 +25,21 @@ public class JsonController implements IJsonController {
     public User getGlobalData(String param) {
         User user = new User();
         user.setName("sss");
-        return user;  //To change body of implemented methods use File | Settings | File Templates.
+        return user;
     }
 
     @Override
     @RequestMapping(value = "/cities", produces = "application/json")
     @ResponseBody
     public Object getCitiesData(String param) {
-        return jsonService.getCitiesData("");  //To change body of implemented methods use File | Settings | File Templates.
+        return jsonService.getCitiesData();
     }
+
+    @Override
+    @RequestMapping("/main")
+    public String getMainPage() {
+        return "index";
+    }
+
+
 }

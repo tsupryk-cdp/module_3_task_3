@@ -13,4 +13,6 @@ public interface IJsonController {
     public User getGlobalData(String param);
 
     public Object getCitiesData(String param);
+
+    public String getMainPage();
 }

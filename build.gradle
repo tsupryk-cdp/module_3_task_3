@@ -1,6 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'jetty'
 
+jettyRun {
+    httpPort=9000
+    stopPort=9001
+}
 repositories {
     mavenCentral()
 }

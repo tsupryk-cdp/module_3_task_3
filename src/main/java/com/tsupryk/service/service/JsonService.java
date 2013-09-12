@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,28 +28,28 @@ public class JsonService implements IJsonService {
     private ObjectMapper jacksonMarshaller;
 
     @Override
-    public String getGlobalData(String param) {
+    public String getGlobalData() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public Map getCitiesData(String param) {
-        Map<String, Object> map = null;
+    public Object getCitiesData() {
+        Map<String, Object> rawData = null;
         try {
             String data = jsonRepository.getData();
             jacksonMarshaller.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
-            map = jacksonMarshaller.readValue(data, HashMap.class);
+            rawData = jacksonMarshaller.readValue(data, HashMap.class);
 
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        return performToCitiesData(map);
+        return performToCitiesData(rawData);
     }
 
-    private Map<String, List<List<String>>> performToCitiesData(Map<String, Object> data) {
+    private Collection<Map<String, Object>> performToCitiesData(Map<String, Object> data) {
 
-        Map<String, List<List<String>>> datasets = new HashMap<>();
+        Map<String, Map<String, Object>> datasets = new HashMap<>();
 
 
         Map<String, Object> all = (Map<String, Object>) data.get("EPAM");
@@ -62,18 +63,23 @@ public class JsonService implements IJsonService {
 
 
             for (String townName : towns.keySet()) {
-                if (datasets.get(townName) == null){
-                    datasets.put(townName, new ArrayList<List<String>>());
+                // init fields
+                if (datasets.get(townName) == null) {
+                    Map<String, Object> townMap = new HashMap<>();
+                    townMap.put("data", new ArrayList<List<Double>>());
+                    townMap.put("label", townName);
+                    datasets.put(townName, townMap);
                 }
 
                 List<Integer> townValuesList = (List<Integer>) towns.get(townName);
 
                 for (int i = 0; i<townValuesList.size(); i++) {
-                    List<String> point = new ArrayList<>();
+                    List<Double> point = new ArrayList<>();
                     Integer y = new Integer(year);
-                    point.add(String.valueOf(y + (0.25 * i)));
-                    point.add(townValuesList.get(i).toString());
-                    datasets.get(townName).add(point);
+                    point.add(y + (0.25 * i));
+                    point.add(Double.valueOf(townValuesList.get(i)));
+                    List<List<Double>> townData1 = (List<List<Double>>) datasets.get(townName).get("data");
+                    townData1.add(point);
                 }
 
             }
@@ -84,6 +90,6 @@ public class JsonService implements IJsonService {
         }
 
 
-        return datasets;
+        return datasets.values();
     }
 }
