@@ -18,18 +18,30 @@ public class JsonController implements IJsonController {
     @Autowired
     private IJsonService jsonService;
 
+    private static final String ERROR_RESPONSE = "{\"error\":\"Error\"}";
+
     @Override
     @RequestMapping(value = "/global", produces = "application/json")
     @ResponseBody
-    public Object getGlobalData(String param) {
-        return jsonService.getGlobalData();
+    public Object getGlobalData() {
+        try {
+            return jsonService.getGlobalData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR_RESPONSE;
+        }
     }
 
     @Override
     @RequestMapping(value = "/cities", produces = "application/json")
     @ResponseBody
-    public Object getCitiesData(String param) {
-        return jsonService.getCitiesData();
+    public Object getCitiesData() {
+        try {
+            return jsonService.getCitiesData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR_RESPONSE;
+        }
     }
 
     @Override
@@ -37,6 +49,5 @@ public class JsonController implements IJsonController {
     public String getMainPage() {
         return "index";
     }
-
 
 }

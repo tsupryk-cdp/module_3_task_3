@@ -7,9 +7,9 @@ package com.tsupryk.web.api;
  */
 public interface IJsonController {
 
-    public Object getGlobalData(String param);
+    public Object getGlobalData();
 
-    public Object getCitiesData(String param);
+    public Object getCitiesData();
 
     public String getMainPage();
 }
