@@ -37,6 +37,8 @@ public class JsonService implements IJsonService {
     private static final String JSON_CONST_EPAM = "EPAM";
     private static final String JSON_CONST_YEAR = "Year";
 
+    private static final double YEAR_QUARTER = 0.25;
+
     @Override
     public Object getGlobalData() {
         Map<String, Object> rawData = getDataMap();
@@ -52,36 +54,39 @@ public class JsonService implements IJsonService {
     }
 
     private Map<String, Object> performToGlobalData(Map<String, Object> rawData) {
-        Map<String, Object> datasets = new HashMap<>();
-        datasets.put(DATA, new ArrayList<List<Double>>());
-        datasets.put(LABEL, "Epam");
-        datasets.put(COLOR, 0);
-
+        Map<String, Object> datasets = createEmptyGlobalDatasets();
         Map<String, Object> all = (Map<String, Object>) rawData.get(JSON_CONST_EPAM);
-
         for (Object yearName : all.keySet()) {
             String yearNameString = (String) yearName;
             String year = yearNameString.replace(JSON_CONST_YEAR, "");
-
             Map<String, Object> towns = (Map<String, Object>) all.get(yearNameString);
-
             double[] yearValues = getGlobalValuesForTowns(towns);
-
             fillDataForYear(datasets, year, yearValues);
         }
         return datasets;
     }
 
+    private Map<String, Object> createEmptyGlobalDatasets() {
+        Map<String, Object> datasets = new HashMap<>();
+        datasets.put(DATA, new ArrayList<List<Double>>());
+        datasets.put(LABEL, "Epam");
+        datasets.put(COLOR, 0);
+        return datasets;
+    }
+
     private void fillDataForYear(Map<String, Object> datasets, String year, double[] yearValues) {
         List<List<Double>> data = (List<List<Double>>) datasets.get(DATA);
-
         for (int i = 0; i < yearValues.length; i++) {
-            List<Double> ld = new ArrayList<>();
-            ld.add(Integer.valueOf(year) + (0.25 * i));
-            ld.add(yearValues[i]);
-            if (ld.get(1) > 0.0) {
-                data.add(ld);
-            }
+            List<Double> point = new ArrayList<>();
+            point.add(Integer.valueOf(year) + (YEAR_QUARTER * i));
+            point.add(yearValues[i]);
+            addIfValueNotEmpty(data, point);
+        }
+    }
+
+    private void addIfValueNotEmpty(List<List<Double>> data, List<Double> point) {
+        if (point.get(1) > 0.0) {
+            data.add(point);
         }
     }
 
@@ -121,21 +126,24 @@ public class JsonService implements IJsonService {
             Map<String, Object> towns = (Map<String, Object>) all.get(yearNameString);
 
             for (String townName : towns.keySet()) {
-                // init fields
                 citiesCount = initFieldsIfNotPresent(datasets, citiesCount, townName);
-
                 List<Integer> townValuesList = (List<Integer>) towns.get(townName);
-                for (int i = 0; i < townValuesList.size(); i++) {
-                    List<Double> point = new ArrayList<>();
-                    Integer y = new Integer(year);
-                    point.add(y + (0.25 * i));
-                    point.add(Double.valueOf(townValuesList.get(i)));
-                    List<List<Double>> townData1 = (List<List<Double>>) datasets.get(townName).get(DATA);
-                    townData1.add(point);
-                }
+                fillTownPointsForYear(datasets, year, townName, townValuesList);
             }
         }
         return datasets.values();
+    }
+
+    private void fillTownPointsForYear(Map<String, Map<String, Object>> datasets, String year, String townName,
+                                       List<Integer> townValuesList) {
+        for (int i = 0; i < townValuesList.size(); i++) {
+            List<Double> point = new ArrayList<>();
+            Integer y = new Integer(year);
+            point.add(y + (YEAR_QUARTER * i));
+            point.add(Double.valueOf(townValuesList.get(i)));
+            List<List<Double>> townData = (List<List<Double>>) datasets.get(townName).get(DATA);
+            townData.add(point);
+        }
     }
 
     private int initFieldsIfNotPresent(Map<String, Map<String, Object>> datasets, int citiesCount, String townName) {
