@@ -77,7 +77,9 @@ public class JsonService implements IJsonService {
                 List<Double> ld = new ArrayList<>();
                 ld.add(Integer.valueOf(year) + (0.25 * i));
                 ld.add(yearValues[i]);
-                data.add(ld);
+                if (ld.get(1) > 0.0) {
+                    data.add(ld);
+                }
             }
         }
         return datasets;
