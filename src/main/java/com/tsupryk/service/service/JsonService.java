@@ -64,25 +64,37 @@ public class JsonService implements IJsonService {
             String year = yearNameString.replace(JSON_CONST_YEAR, "");
 
             Map<String, Object> towns = (Map<String, Object>) all.get(yearNameString);
-            double[] yearValues = new double[]{0.0, 0.0, 0.0, 0.0};
 
-            for (String townName : towns.keySet()) {
-                List<Integer> townValuesList = (List<Integer>) towns.get(townName);
-                for (int i = 0; i<townValuesList.size(); i++) {
-                    yearValues[i] += Double.valueOf(townValuesList.get(i));
-                }
-            }
-            List<List<Double>> data = (List<List<Double>>) datasets.get(DATA);
-            for (int i = 0; i < yearValues.length; i++) {
-                List<Double> ld = new ArrayList<>();
-                ld.add(Integer.valueOf(year) + (0.25 * i));
-                ld.add(yearValues[i]);
-                if (ld.get(1) > 0.0) {
-                    data.add(ld);
-                }
-            }
+            double[] yearValues = getGlobalValuesForTowns(towns);
+
+            fillDataForYear(datasets, year, yearValues);
         }
         return datasets;
+    }
+
+    private void fillDataForYear(Map<String, Object> datasets, String year, double[] yearValues) {
+        List<List<Double>> data = (List<List<Double>>) datasets.get(DATA);
+
+        for (int i = 0; i < yearValues.length; i++) {
+            List<Double> ld = new ArrayList<>();
+            ld.add(Integer.valueOf(year) + (0.25 * i));
+            ld.add(yearValues[i]);
+            if (ld.get(1) > 0.0) {
+                data.add(ld);
+            }
+        }
+    }
+
+    private double[] getGlobalValuesForTowns(Map<String, Object> towns) {
+        double[] yearValues = new double[]{0.0, 0.0, 0.0, 0.0};
+
+        for (String townName : towns.keySet()) {
+            List<Integer> townValuesList = (List<Integer>) towns.get(townName);
+            for (int i = 0; i<townValuesList.size(); i++) {
+                yearValues[i] += Double.valueOf(townValuesList.get(i));
+            }
+        }
+        return yearValues;
     }
 
     private Map<String, Object> getDataMap() {
@@ -110,13 +122,8 @@ public class JsonService implements IJsonService {
 
             for (String townName : towns.keySet()) {
                 // init fields
-                if (datasets.get(townName) == null) {
-                    Map<String, Object> townMap = new HashMap<>();
-                    townMap.put(DATA, new ArrayList<List<Double>>());
-                    townMap.put(LABEL, townName);
-                    townMap.put(COLOR, citiesCount++);
-                    datasets.put(townName, townMap);
-                }
+                citiesCount = initFieldsIfNotPresent(datasets, citiesCount, townName);
+
                 List<Integer> townValuesList = (List<Integer>) towns.get(townName);
                 for (int i = 0; i < townValuesList.size(); i++) {
                     List<Double> point = new ArrayList<>();
@@ -129,5 +136,16 @@ public class JsonService implements IJsonService {
             }
         }
         return datasets.values();
+    }
+
+    private int initFieldsIfNotPresent(Map<String, Map<String, Object>> datasets, int citiesCount, String townName) {
+        if (datasets.get(townName) == null) {
+            Map<String, Object> townMap = new HashMap<>();
+            townMap.put(DATA, new ArrayList<List<Double>>());
+            townMap.put(LABEL, townName);
+            townMap.put(COLOR, citiesCount++);
+            datasets.put(townName, townMap);
+        }
+        return citiesCount;
     }
 }
